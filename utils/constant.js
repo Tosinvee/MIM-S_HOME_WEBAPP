@@ -5,5 +5,5 @@ const USER_ROLES = {
         RETAILER: 'retailer',
         GUEST: 'guest'
     }
-
-    module.exports = USER_ROLES;
+Object.freeze(USER_ROLES)
+module.exports = USER_ROLES;

@@ -4,10 +4,10 @@ const validator = require('validator')
 const USER_ROLES = require('../utils/constant')
 
 const userSchema = new mongoose.Schema({
-    user_id:{
-        type: String,
-        default: uuidv4
-    },
+    // user_id:{
+    //     type: String,
+    //     default: uuidv4
+    // },
     name:{
         type: String,
         required:[true, 'please provide your name'],
@@ -21,8 +21,8 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['user', 'admin'],
-        default: 'user'
+        enum:[...Object.values(USER_ROLES)],
+        default: Object.values(USER_ROLES.ADMIN)
     },
     password:{
         type: String,
@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
         minlenght: 8
 
     },
+    //USER_ROLE['USER']
 // age
 // gender
 // marital status
