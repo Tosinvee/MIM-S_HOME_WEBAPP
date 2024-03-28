@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 //const { v4: uuidv4 } = require('uuid')
+const bcrypt = require('bcryptjs')
 const validator = require('validator')
 const USER_ROLES = require('../utils/constant')
 
@@ -32,12 +33,28 @@ const userSchema = new mongoose.Schema({
     },
     passwordConfirm:{
         type:String,
-        required:[true, 'please confirm your password']
+        required:[true, 'please confirm your password'],
+        validate:{
+        validator: function (el) {
+            return el === this.password //to validate that password and confirm password are the same
+        },
+        message:'password are the same with passwordConfirm'
     }
+}
     //USER_ROLE['USER']
 // age
 // gender
 // marital status
+
+})
+
+userSchema.pre('save', async function(next) {
+    // only run if password is modified
+    if(!this.isModified('password')) return next()
+    //Hash the password with cost 0f 12
+    this.password = await bcrypt.hash(this.password, 12)
+    //restrict the password from going into the database
+    this.passwordConfirm = undefined
 
 })
 
