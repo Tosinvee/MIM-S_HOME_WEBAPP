@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { v4: uuidv4 } = require('uuid')
+//const { v4: uuidv4 } = require('uuid')
 const validator = require('validator')
 const USER_ROLES = require('../utils/constant')
 
@@ -19,17 +19,21 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         validate: [validator.isEmail, 'please provide a valid email']
     },
-    role:{
-        type:String,
-        enum:[...Object.values(USER_ROLES)],
-        default: Object.values(USER_ROLES.ADMIN)
-    },
+    // role:{
+    //     type:String,
+    //     enum:[...Object.values(USER_ROLES)],
+    //     default: Object.values(USER_ROLES.ADMIN)
+    // },
     password:{
         type: String,
         required:[true, 'please provide a password'],
         minlenght: 8
 
     },
+    passwordConfirm:{
+        type:String,
+        required:[true, 'please confirm your password']
+    }
     //USER_ROLE['USER']
 // age
 // gender
