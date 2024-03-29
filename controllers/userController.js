@@ -3,7 +3,7 @@ const User = require("../models/usersModel");
 const catchAsync = require("../utils/catchAsync");
 //const { v4: uuidv4 } = require('uuid')
 
-const getAllUsers = catchAsync(async (req, res) => {
+const getAllUsers = catchAsync(async (req, res,next) => {
     const users = await User.find();
     res.status(200).json({
       status: "sucess",
@@ -20,7 +20,7 @@ const getUser = (req, res) => {
   });
 };
 
-const createUser = catchAsync(async (req, res) => {
+const createUser = catchAsync(async (req, res,next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
