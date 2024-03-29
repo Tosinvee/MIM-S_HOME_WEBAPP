@@ -18,7 +18,7 @@ const signUp = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
     // passwordResetExpires: req.body.passwordResetExpires,
-    // role: req.body.role
+     role: req.body.role
   });
 
   const token = signToken(newUser._id);
@@ -91,4 +91,25 @@ const protect = catchAsync(async (req, res, next) => {
 req.user = freshUser
   next();
 });
-module.exports = { signUp, login, protect };
+
+const restrictTo = (...roles) =>{
+  return (req,res,next) =>{
+    if(!roles.includes(req.user.role)){
+      return next(new AppError('you do not have the permission to perform this operation', 403))
+    }
+    next()
+  }
+} 
+
+const forgotPassword =catchAsync(async (req,res,next)=>{
+  const user = await User.findOne({email:req.body.email})
+// Get user based on posted email
+  if(!user){
+    return next(new AppError('There is no user with email address', 404))
+  }
+  // generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({validateBeforeSave: false}) // to help pass validation rules before saving
+})
+
+module.exports = { signUp, login, protect, restrictTo , forgotPassword};

@@ -43,12 +43,26 @@ const updateUser = (req, res) => {
     message: "on the way",
   });
 };
-const deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "on the way",
+// const deleteUser = (req, res) => {
+//   res.status(500).json({
+//     status: "error",
+//     message: "on the way",
+//   });
+// };
+
+const deleteUser = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+
+  if (!user) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
+
+  res.status(204).json({
+    status: 'success',
+    data: null
   });
-};
+});
+
 
 // const userValidation = Joi.object({
 //     email:Joi.string().email().required(),
