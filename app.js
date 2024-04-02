@@ -6,7 +6,6 @@ const userRouter = require('./routes/userRoutes')
 const productRouter = require('./routes/productRoutes');
 
 
-
 const app = express()
 
 //MIDDLEWARES

@@ -56,15 +56,25 @@ const userSchema = new mongoose.Schema({
   // gender
   // marital status
 });
-
+//METHOD TO HASH PASSWORD BEFORE SAVING INTO DATABASE
 userSchema.pre("save", async function (next) {
-  // only run if password is modified
+  // only run if password is modified i.e just setting the password for the firsttime 
   if (!this.isModified("password")) return next();
   //Hash the password with cost 0f 12
   this.password = await bcrypt.hash(this.password, 12);
   //restrict the passwordconfirm from getting saved into the database
   this.passwordConfirm = undefined;
 });
+
+
+//METHOD TO RUN WHEN YOU WANT TO CHANGE YOUR PASSWORD
+userSchema.pre('save', function(next){
+  //If the password is modified and it's not a new user, update the passwordChangedAt field
+  if(!this.isModified("password") || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000
+  next()
+})
+
 //to compare the newpassword inputted to saved password in the database when logging in
 userSchema.methods.correctPassword = async function (
   newPassword,
@@ -72,7 +82,8 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(newPassword, userPassword);
 };
-// to compare the time of password created and the time the token was issued
+
+// METHOD TO compare the time of password created and the time the token was issued
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
