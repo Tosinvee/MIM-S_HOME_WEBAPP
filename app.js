@@ -1,5 +1,9 @@
 const express = require('express');
 const morgan = require('morgan')
+const rateLimit = require('express-rate-limit')
+const helmet = require('helmet')
+
+
 const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes')
@@ -8,19 +12,32 @@ const productRouter = require('./routes/productRoutes');
 
 const app = express()
 
-//MIDDLEWARES
+//GLOBAL MIDDLEWARES
+// set security HTTP headers
+app.use(helmet())
+
+//Development logging
 if (process.env.NODE_ENV = 'development')
 app.use(morgan('dev'));
 
-// middleware that parses the JSON data and makes it available in req.body 
+//limit request from same api
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Too many requests from this IP, please try again in an hour!'
+
+});
+app.use('/api', limiter)
+
+//body parser middleware that parses the JSON data and makes it available in req.body 
 app.use(express.json())
 app.use(express.static(`${__dirname}/public`))
 
 
 
 //ROUTES- mounting of route
-app.use('/users', userRouter )
-app.use('/products', productRouter)
+app.use('/api/users', userRouter )
+app.use('/api/products', productRouter)
 
 //undefined route handler
 app.all('*', (req,res,next)=>{
