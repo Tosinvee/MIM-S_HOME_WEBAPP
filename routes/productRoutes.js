@@ -1,5 +1,6 @@
 const express = require('express');
-const {getAllProducts,getProduct,createProduct,updateProduct,deleteProduct} = require('../controllers/productContoller')
+const {getAllProducts,getProduct,createProduct,updateProduct,deleteProduct} = require('../controllers/productContoller');
+const { restrictTo, protect } = require('../controllers/authController');
 const router = express.Router()
 
 router.param('id', (req,res,next,val)=>{
@@ -13,8 +14,8 @@ router
 
 router
 .route('/:id')
-.get(getProduct)
-.patch(updateProduct)
-.delete(deleteProduct)
+.get(protect, restrictTo,getProduct)
+.patch(protect, restrictTo, updateProduct)
+.delete(protect, restrictTo, deleteProduct)
 
 module.exports = router;

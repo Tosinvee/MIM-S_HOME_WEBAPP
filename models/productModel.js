@@ -20,11 +20,26 @@ const productSchema = new mongoose.Schema({
 
     quantity:{
         type:Number,
-        required: [true, 'A product must a have price']
+        requited: true
+    },
+    sold:{
+        type:Number,
+        default:0
     },
     price:{
         type:Number,
         required:true
+    },
+    category:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref: 'category'
+    },
+    images:{
+        type: Array
+    },
+    color:{
+        types: String,
+        enum: ["Black", "Brown", "Red"]
     }
 })
 
