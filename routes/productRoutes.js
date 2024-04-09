@@ -14,8 +14,8 @@ router
 
 router
 .route('/:id')
-.get(protect, restrictTo,getProduct)
-.patch(protect, restrictTo, updateProduct)
-.delete(protect, restrictTo, deleteProduct)
+.get(protect, restrictTo('admin', 'vendor'),getProduct)
+.patch(protect, restrictTo('admin', 'vendor'), updateProduct)
+.delete(protect, restrictTo('admin', 'vendor'), deleteProduct)
 
 module.exports = router;

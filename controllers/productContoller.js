@@ -86,7 +86,8 @@ const deleteProduct =catchAsync(async(req, res,next) => {
         return next(new AppError('No user with this id', 404))
     }
   res.status(200).json({
-    status: "sucess"
+    status: "sucess",
+    data:null
   });
 });
 
