@@ -1,10 +1,10 @@
-const Product = require("../models/productModel");
+const Products = require("../models/productModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const slugify = require('slugify')
 
 const getAllProducts = catchAsync(async(req, res,next) => {
-    const product = await Product.find()
+    const product = await Products.find()
 
   res.status(200).json({
     status: "sucess",
@@ -33,7 +33,7 @@ const getAllProducts = catchAsync(async(req, res,next) => {
 // });
 
 const getProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Products.findById(req.params.id);
 
   if (!product) {
     return next(new AppError("No product found with this ID", 404));
@@ -48,7 +48,7 @@ const getProduct = catchAsync(async (req, res, next) => {
 });
 
 const createProduct = catchAsync(async (req, res, next) => {
-  const newProduct = await Product.create(req.body);
+  const newProduct = await Products.create(req.body);
 
   res.status(200).json({
     status: "sucess",
@@ -64,7 +64,7 @@ const updateProduct =catchAsync(async(req, res,next) => {
     if(req.body.title){
         req.body.slug = slugify(req.body.title)//if the cond is met a slug is generated from the title
     }
-    const product = await Product.findOneAndUpdate({_id: productId}, req.body, {
+    const product = await Products.findOneAndUpdate({_id: productId}, req.body, {
         new:true
     })
 
@@ -80,7 +80,7 @@ const updateProduct =catchAsync(async(req, res,next) => {
   });
 });
 const deleteProduct =catchAsync(async(req, res,next) => {
-    const product = await Product.findByIdAndDelete(req.params.id)
+    const product = await Products.findByIdAndDelete(req.params.id)
 
     if(!product){
         return next(new AppError('No user with this id', 404))

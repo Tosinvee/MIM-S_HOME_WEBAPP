@@ -40,9 +40,20 @@ const productSchema = new mongoose.Schema({
     color:{
         types: String,
         enum: ["Black", "Brown", "Red"]
-    }
-})
+    },
+    category:{
+        type:mongoose.Schema.Types.ObjectId,
+         ref:'categories',
+        required:true
+    },
+    tags: [{type: String}]
 
-const Product = mongoose.model('Product', productSchema);
+},
+{
+    timestamps:true
+}
+)
 
-module.exports = Product
+const Products = mongoose.model('Products', productSchema);
+
+module.exports = Products
