@@ -22,9 +22,9 @@ const userSchema = new mongoose.Schema({
     validate: [validator.isEmail, "please provide a valid email"],
   },
 
-  role:{
-    type:String,
-    enum: ['user', 'admin', 'vendor','community manager'],
+  role: {
+    type: String,
+    enum: ['user', 'admin', 'vendor', 'community manager'],
     default: 'user'
   },
   // role:{
@@ -48,6 +48,7 @@ const userSchema = new mongoose.Schema({
       message: "password are the same with passwordConfirm",
     },
   },
+
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date
@@ -68,9 +69,9 @@ userSchema.pre("save", async function (next) {
 
 
 //METHOD TO RUN WHEN YOU WANT TO CHANGE YOUR PASSWORD
-userSchema.pre('save', function(next){
+userSchema.pre('save', function (next) {
   //If the password is modified and it's not a new user, update the passwordChangedAt field
-  if(!this.isModified("password") || this.isNew) return next();
+  if (!this.isModified("password") || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 1000
   next()
 })
@@ -99,12 +100,12 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function (){
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(16).toString('hex') // generate a reset token
 
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')// hash the reset token
 
-  console.log({resetToken}, this.passwordResetToken)
+  console.log({ resetToken }, this.passwordResetToken)
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000 //an expiry date to the reset token
 
