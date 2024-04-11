@@ -4,7 +4,7 @@ const payStack = (request) => {
   const initializePayment = (form, myCallBack) => {
     // THE OPTIONS OBJECT CONTAINS THE URL,HEADER, AND FORM DATA
     const options = {
-      url: "https://api.paystack.co/transaction/initialize",//THE ENDPOINT WE ARE ACCESSING WHICH IS THE PATSTACT INITIALIZE ENDPOINT
+      url: "https://api.paystack.co/transaction/initialize",//THE ENDPOINT WE ARE ACCESSING WHICH IS THE PATSTACK INITIALIZE ENDPOINT
       headers: {
         authorization: process.env.PAYSTACK_SECRET_KEY,
         "content-type": "application/json",
