@@ -9,6 +9,7 @@ const AppError = require('./utils/appError')
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes')
 const productRouter = require('./routes/productRoutes');
+const categoryRouter = require('./routes/categoryRouter')
 
 
 const app = express()
@@ -47,6 +48,7 @@ app.use(express.static(`${__dirname}/public`))
 //ROUTES- mounting of route
 app.use('/api/users', userRouter )
 app.use('/api/products', productRouter)
+app.use('api/categories',categoryRouter)
 
 //undefined route handler
 app.all('*', (req,res,next)=>{
