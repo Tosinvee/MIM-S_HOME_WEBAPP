@@ -16,7 +16,7 @@ const createCategory = catchAsync(async (req, res, next) => {
   const { name, image } = req.body;
   //check if category exists
   const existCategory = await Categories.find({ name });
-  if (existCategory) {
+  if (existCategory.lengths > 0) {
     return next(new AppError("category already exist", 404));
   }
   const category = new Categories({ name, image });

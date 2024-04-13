@@ -14,7 +14,7 @@ const paymentSchema = new moongose.Schema({
         type:Number,
         required:true
     },
-    refernce:{
+    reference:{
         type:String,
         required:true,
         unique:true
@@ -28,6 +28,6 @@ const paymentSchema = new moongose.Schema({
     timestamps: true
 }
 )
-const Payment = moongose.model(Payment,paymentSchema)
+const Payment = moongose.model('Payment', paymentSchema)
 
 module.exports = Payment

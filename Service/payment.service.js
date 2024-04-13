@@ -1,7 +1,9 @@
-const request = require('request')
+//const request = require('request')
 const Payment = require('../models/paymentModel')
 const _ = require('lodash')
-const payStack = require('../utils/payment')
+const payStack = require('../utils/payment');
+const initializePayment = payStack.initializePayment;
+const verifyPayment = payStack.verifyPayment;
 
 class paymentService{
     startPayment(data){

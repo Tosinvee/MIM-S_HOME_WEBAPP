@@ -41,4 +41,4 @@ const payStack = (request) => {
   return { initializePayment, verifyPayment };
 };
 // THIS EXPORT THE FUNCTION MAKINH IT AVAILABLE IN OTHER MODULES
-module.exports = payStack;
+module.exports = {payStack};
