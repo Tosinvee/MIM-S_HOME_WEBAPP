@@ -4,14 +4,17 @@ const mongoose = require('mongoose');
 const categorySchema = mongoose.Schema({
     name:{
         type:String,
-        required: true
+        required: true,
+        unique: true
     },
 
-    image:{
+    icon:{
         type: String,
-        required:true
-    }
 
+},
+    color:{
+        type:String
+    }
 },
 {
     timestamps: true

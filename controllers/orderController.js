@@ -18,3 +18,12 @@ const createOrder = catchAsync(async(req, res, next)=>{
 
     res.status(201).json(createdOrder)
 })
+
+const getUserOrder = catchAsync(async(req, res, next)=>{
+    const orders = await Orders.find({user:req.user._id})
+    createdAt: -1
+})
+const totalOrders = await Orders.find({user:req.user._id})
+const pendingOrders = await Orders.countDocument({
+    user: req.user._id
+})

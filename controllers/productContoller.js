@@ -1,16 +1,22 @@
+const { default: mongoose } = require("mongoose");
+const Categories = require("../models/categoryModel");
 const Products = require("../models/productModel");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-const slugify = require('slugify')
+const slugify = require("slugify");
 
-const getAllProducts = catchAsync(async(req, res,next) => {
-    const product = await Products.find()
+const getAllProducts = catchAsync(async (req, res, next) => {
+  let filter = {};
+  if(req.query.Categories){
+    filter = {category:req.query.Categories.split(',}')}
+  }
+  const product = await Products.find(filter).select("category");
 
   res.status(200).json({
     status: "sucess",
-    data:{
-        product
-    }
+    data: {
+      product,
+    },
   });
 });
 
@@ -48,48 +54,88 @@ const getProduct = catchAsync(async (req, res, next) => {
 });
 
 const createProduct = catchAsync(async (req, res, next) => {
-  const newProduct = await Products.create(req.body);
+  const category = await Categories.findById(req.body.category);
+  if (!category) {
+    return next(new AppError("invalid category", 404));
+  }
+
+  const newProduct = new Products({
+    name: req.body.name,
+    description: req.body.description,
+    image: req.body.image,
+    brand: req.body.brand,
+    price: req.body.price,
+    quantity: req.body.quantity,
+    category: req.body.category,
+    countInStock: req.body.countInStock,
+    numReviews: req.body.numReviews,
+    isFeatured: req.body.isFeatured,
+  });
+  const product = await newProduct.save();
+
+  if (!product) {
+    return next(AppError("This product cannot be created", 404));
+  }
+  res.status(200).json({
+    status: "sucess",
+    data: {
+      newProduct,
+    },
+  });
+});
+
+//UPDATE PRODUCT
+const updateProduct = catchAsync(async (req, res, next) => {
+// this method returns true if id is valid
+  if(!mongoose.isValidObjectId(req.params.id)){
+  return next(new AppError('Invalid id', 404))
+  }
+  const category = await Categories.findById(req.body.category);
+  if (!category) {
+    return next(new AppError("invalid category", 404));
+  }
+  const product = await Products.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      description: req.body.description,
+      image: req.body.image,
+      brand: req.body.brand,
+      price: req.body.price,
+      quantity: req.body.quantity,
+      category: req.body.category,
+      countInStock: req.body.countInStock,
+      numReviews: req.body.numReviews,
+      isFeatured: req.body.isFeatured,
+    },
+    { new: true }
+  );
+
+  if (!product) {
+    return next(new AppError("product cannot be updated", 404));
+  }
 
   res.status(200).json({
     status: "sucess",
     data: {
-      product: newProduct,
+      product,
     },
   });
 });
-//UPDATE PRODUCT
-const updateProduct =catchAsync(async(req, res,next) => {
-    const productId= req.params.id
-//checks if the rreq.body contains a property called titlt
-    if(req.body.title){
-        req.body.slug = slugify(req.body.title)//if the cond is met a slug is generated from the title
-    }
-    const product = await Products.findOneAndUpdate({_id: productId}, req.body, {
-        new:true
-    })
 
-    if(!product){
-        return next(new AppError("product not found", 404))
-    }
+//DELETE PRODUCT
+const deleteProduct = catchAsync(async (req, res, next) => {
+  const product = await Products.findByIdAndDelete(req.params.id);
 
+  if (!product) {
+    return next(new AppError("No user with this id", 404));
+  }
   res.status(200).json({
     status: "sucess",
-    data:{
-        product
-    }
+    data: null,
   });
 });
-const deleteProduct =catchAsync(async(req, res,next) => {
-    const product = await Products.findByIdAndDelete(req.params.id)
 
-    if(!product){
-        return next(new AppError('No user with this id', 404))
-    }
-  res.status(200).json({
-    status: "sucess",
-    data:null
-  });
-});
 
 module.exports = {
   getAllProducts,

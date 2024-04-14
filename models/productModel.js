@@ -2,16 +2,10 @@ const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema(
   {
-    title: {
+    name: {
       type: String,
       required: [true, "A product must have a title"],
       trim: true,
-    },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
     },
     description: {
       type: String,
@@ -21,11 +15,7 @@ const productSchema = new mongoose.Schema(
 
     quantity: {
       type: Number,
-      requited: true,
-    },
-    sold: {
-      type: Number,
-      default: 0,
+      required: true,
     },
     price: {
       type: Number,
@@ -77,9 +67,7 @@ const productSchema = new mongoose.Schema(
     isFeatured:{
         type:Boolean,
         default:false
-    },
-    
-    tags: [{ type: String }],
+    }
   },
   {
     timestamps: true,
