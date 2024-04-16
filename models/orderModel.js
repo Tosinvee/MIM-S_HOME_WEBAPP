@@ -1,55 +1,86 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const orderSchema = mongoose.Schema({
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User',
+    orderItems: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'OrderItem',
         required:true
+    }],
+    shippingAddress1: {
+        type: String,
+        required: true,
     },
-
-    orderItems :[
-        {
-            name:{type:String, required:true},
-            size:{type:String, required:true},
-            color:{type:String, required:true},
-            qty:{type:String, required:true},
-            image:{type:String, required:true},
-            price:{type:String, required:true},
-            product:{
-                type:moongose.Schema.Types.ObjectId,
-                ref:'Products',
-                required:true,
-            }
-        }
-    ],
-    shippingAddress:{
-        fullname:{type:String},
-        address:{type:String},
-        email:{
-            type:String,
-            trim:true,
-            lowercase:true
-        },
-        location:{type:String},
-        phoneNumber:{type:String},
-        shippingMethod:{type:String},
-        shippingCost:{type:Number},   
+    shippingAddress2: {
+        type: String,
     },
-    payments:{
-        paymentMethod:{type:String},
-        status: {type:String, default:'pending', required:true},
-        paymentDate:{type:Date}
+    city: {
+        type: String,
+        required: true,
     },
-    delivery:{
-        status:{type:String, default:'awaiting',required: true},
-        deliveryDate:{type:Date},
-        deliveryMethod:{type:String},
+    zip: {
+        type: String,
+        required: true,
     },
-    totalPrice:{type:Number, required:true},
-    subTotalPrice:{type:Number, required:true},
-    taxprice:{type:Number, required:true, default:0.0},
+    country: {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        required: true,
+        default: 'Pending',
+    },
+    totalPrice: {
+        type: Number,
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    dateOrdered: {
+        type: Date,
+        default: Date.now,
+    },
 })
 
-const Orders = mongoose.model(Orders, orderSchema)
+orderSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
 
-module.exports = Orders
+orderSchema.set('toJSON', {
+    virtuals: true,
+});
+
+const Order = mongoose.model(Order, orderSchema)
+module.exports = Order
+
+
+
+/**
+Order Example:
+
+{
+    "orderItems" : [
+        {
+            "quantity": 3,
+            "product" : "5fcfc406ae79b0a6a90d2585"
+        },
+        {
+            "quantity": 2,
+            "product" : "5fd293c7d3abe7295b1403c4"
+        }
+    ],
+    "shippingAddress1" : "Flowers Street , 45",
+    "shippingAddress2" : "1-B",
+    "city": "Prague",
+    "zip": "00000",
+    "country": "Czech Republic",
+    "phone": "+420702241333",
+    "user": "5fd51bc7e39ba856244a3b44"
+}
+
+ */

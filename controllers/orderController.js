@@ -1,29 +1,56 @@
-const Orders = require('../models/orderModel');
+const orderItems = require('../models/orderItemModel');
+const Order = require('../models/orderModel');
 const Products = require('../models/productModel');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync')
 
-const createOrder = catchAsync(async(req, res, next)=>{
-    const {orderItems ,subTotalPrice,totalPrice} = req.body;
-    const order = new Orders({
-        orderItems,subTotalPrice,totalPrice,
-        user:req.user._id
-    })
-    // reduce stock of ordered products
-    orderItems.forEach(async(item)=>{
-        const product = await Products.findById(item.product)
-        product.stock = product.stock - item.qty
-        await product.save()
-    })
-    const createdOrder = await Orders.save()
+const getOrder = catchAsync(async(req,res,next)=>{
+ const order = await Order.find()
 
-    res.status(201).json(createdOrder)
+ res.status(200).json({
+    status:'sucess',
+    data:{
+        order
+    }
+ })
 })
 
-const getUserOrder = catchAsync(async(req, res, next)=>{
-    const orders = await Orders.find({user:req.user._id})
-    createdAt: -1
-})
-const totalOrders = await Orders.find({user:req.user._id})
-const pendingOrders = await Orders.countDocument({
-    user: req.user._id
+const createOrder = catchAsync(async(req,res,next)=>{
+    const orderItemsIds = req.body.orderItems.map(async orderItem=>{
+        let newOrderItem = new orderItems({
+            quantity:orderItem.quantity,
+            product:orderItem.product
+        })
+
+        newOrderItem = await newOrderItem.save();
+
+        return newOrderItem._id
+
+    }) 
+
+    let order = new Order({
+        orderItems:orderItemsId,
+        shippingAddress1:req.body.shippingAddress1,
+        shippingAddress2:req.body.shippingAddress2,
+        city:req.body.city,
+        zip:req.body.zip,
+        country:req.body.country,
+        phone:req.body.phone,
+        status:req.body.status,
+        totalPrice:req.body.totalPrice,
+        user:req.body.user
+
+        
+    })
+    order = await order.save();
+
+    if(!order){
+        return next(new AppError(''))
+    }
+    res.status(200).json({
+        status:'sucess',
+        data:{
+            order
+        }
+     })
 })
