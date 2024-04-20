@@ -1,74 +1,58 @@
 //const request = require('request')
-const Payment = require('../models/paymentModel')
-const _ = require('lodash')
-//const {initializePayment, verifyPayment}= require('../utils/payment');
+const Payment = require('../models/paymentModel');
+const _ = require('lodash');
+const { initializePayment, verifyPayment } = require('../utils/payment');
 
+class PaymentService {
+    async startPayment(data) {
+        try {
+            const form = _.pick(data, ['amount', 'email', 'full_name']);
+            form.metadata = {
+                full_name: form.full_name
+            };
+            form.amount *= 100;
 
-class paymentService{
-    startPayment(data){
-        return new Promise(async(resolve, reject)=>{
-            try{
-                const form = _.pick(data, ['amount', 'email', 'full_name']);
-                form.metadata = {
-                    full_name : form.full_name
-                }
-                form.amount *= 100;
-
-                initializePayment(form, (error, body)=>{
-                    if (error){
-                        reject (error.message)
-                    }
-                    const response = JSON.parse(body);
-
-                    return resolve(response)
-                });
-            }catch(error){
-                error.source = 'start payment service';
-                return reject(error)
-            }
-        })
-    }
-
-    createPayment(req){
-        const ref = req.reference;
-        if(req==null){
-            return reject({code: 400, message:'no reference passed in query!'})
+            const response = await initializePayment(form);
+            return response;
+        } catch (error) {
+            error.source = 'start payment service';
+            throw error;
         }
-        return new Promise(async(resolve, reject)=>{
-            try{
-                verifyPayment(ref, (error, body)=>{
-                    if(error){
-                        reject(error.message)
-                    }
-                    const response = JSON.parse(body);
-
-                    const{reference, amount, status} = response.data;
-                    const {email} = response.data.customer;
-                    const full_name = response.data.metadata.full_name;
-                    const newPayment = {reference, amount, email, fullname, status}
-                    const payment = Payment.create(newPayment)
-
-                    return resolve(payment)
-                })
-            }catch(error){
-                error.source = 'create payment service';
-                return reject(error)
-            }
-        });
     }
 
-   paymentReceipt(body){
-    return new Promise(async(resolve, reject)=>{
-        try{
-          const reference = body.refernce;
-          const transaction = Payment.findOne({reference:reference})
-          return resolve(transaction);  
-        }catch(error){
+    async createPayment(req) {
+        try {
+            const ref = req.reference;
+            console.log(ref)
+            if (!ref) {
+                throw { code: 400, message: 'No reference passed in query!' };
+            }
+
+            const response = await verifyPayment(ref);
+            const { reference, amount, status } = response.data;
+            const { email } = response.data.customer;
+            const full_name = response.data.metadata.full_name;
+
+            const newPayment = { reference, amount, email, full_name, status };
+            const payment = await Payment.create(newPayment);
+            
+            return payment;
+        } catch (error) {
+            error.source = 'create payment service';
+            throw error;
+        }
+    }
+
+    async getPayment(body) {
+        try {
+            const reference = body.reference;
+            const transaction = await Payment.findOne({ reference });
+            return transaction;
+        } catch (error) {
             error.source = 'Payment Receipt';
-            return reject(error)
+            throw error;
         }
-    })
-   } 
+    }
 }
 
-module.exports = paymentService
+module.exports = PaymentService;
